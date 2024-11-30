@@ -43,7 +43,7 @@ def display_summary_page():
             # Summarization options
             st.subheader("Summarization Options:")
             method = st.selectbox("Select summarization method:", ["TF-IDF", "Embedding", "Abstractive"])
-            percentage = st.slider("Summary percentage (in %):", 10, 100, 30, step=5) / 100
+            
 
             # Summarize Button
             if st.button("Generate Summary"):
@@ -52,11 +52,11 @@ def display_summary_page():
                     try:
                         if method == "TF-IDF":
                             summarizer = TextSummarizer(method='tfidf')
-                            summary = summarizer.summarize(text, percentage)
+                            summary = summarizer.summarize(text,0.3)
                         
                         elif method == "Embedding":
                             summarizer = TextSummarizer(method='embedding')
-                            summary = summarizer.summarize(text, percentage)
+                            summary = summarizer.summarize(text, 0.3)
                         
                         elif method == "Abstractive":
                             summarizer = AbstractiveSummarizer()
@@ -103,26 +103,24 @@ def display_chatbot_page():
             # Append the question and answer to the conversation history
             st.session_state.conversation_history.append({"question": user_query, "answer": response})
 
-            # Clear the question box after submitting
-            st.experimental_rerun()
-
-    # Display the chat history
+    # Display the chat history with colors and styling
     if st.session_state.conversation_history:
         st.subheader("Conversation History")
         for chat in st.session_state.conversation_history:
-            # Style question and answer differently using markdown
-            question_style = """
-                <div style="background-color: #d1f7d7; padding: 10px; margin-bottom: 5px; border-radius: 5px;">
-                    <strong>Question:</strong> {0}
-                </div>
-            """
-            answer_style = """
-                <div style="background-color: #f2f2f2; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
-                    <strong>Answer:</strong> {0}
-                </div>
-            """
-            st.markdown(question_style.format(chat['question']), unsafe_allow_html=True)
-            st.markdown(answer_style.format(chat['answer']), unsafe_allow_html=True)
+            st.markdown(
+    f"""
+    <div style="margin-bottom: 1em; padding: 1em; border-radius: 10px; background-color: #f0f8ff; border: 1px solid #87cefa;">
+        <p style="margin: 0; font-size: 16px; color: #007acc; font-weight: bold;"><strong>User:</strong></p>
+        <p style="margin: 0; font-size: 15px; color: #003d99;">{chat['question']}</p>
+    </div>
+    <div style="margin-bottom: 1em; padding: 1em; border-radius: 10px; background-color: #f9fff0; border: 1px solid #98fb98;">
+        <p style="margin: 0; font-size: 16px; color: #228b22; font-weight: bold;"><strong>Answer:</strong></p>
+        <p style="margin: 0; font-size: 15px; color: #1a531b;">{chat['answer']}</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 
 def main():
     # First, ensure NLTK data is downloaded
